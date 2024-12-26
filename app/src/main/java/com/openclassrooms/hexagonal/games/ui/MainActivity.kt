@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.openclassrooms.hexagonal.games.screen.Screen
+import com.openclassrooms.hexagonal.games.screen.account.InitialLoginScreen
 import com.openclassrooms.hexagonal.games.screen.ad.AddScreen
 import com.openclassrooms.hexagonal.games.screen.homefeed.HomefeedScreen
 import com.openclassrooms.hexagonal.games.screen.settings.SettingsScreen
@@ -59,7 +60,7 @@ fun HexagonalGamesNavHost(navHostController: NavHostController) {
           navHostController.navigate(Screen.Settings.route)
         },
         onAccountClick = {
-          navHostController.navigate(Screen.SigningScreen.route)
+          navHostController.navigate(Screen.InitialLoginScreen.route) // Navigate to InitialLoginScreen when Account is clicked
         },
         onFABClick = {
           navHostController.navigate(Screen.AddPost.route)
@@ -79,8 +80,22 @@ fun HexagonalGamesNavHost(navHostController: NavHostController) {
     }
     composable(route = Screen.SigningScreen.route) {
       SigninScreen(
-        onLoginSuccess = { navHostController.navigateUp() }
+        onLoginSuccess = { navHostController.navigateUp() },
+        navController = navHostController // Pass the NavHostController here
+      )
+    }
+    // Add composable for InitialLoginScreen
+    composable(route = Screen.InitialLoginScreen.route) {
+      InitialLoginScreen(
+        onSignInClick = {
+          navHostController.navigate(Screen.SigningScreen.route) {
+            // This ensures the back stack only includes InitialLoginScreen and HomefeedScreen
+            popUpTo(Screen.Homefeed.route) { inclusive = false }
+          }
+        },
+        navController = navHostController
       )
     }
   }
 }
+

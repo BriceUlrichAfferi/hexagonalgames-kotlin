@@ -13,6 +13,6 @@ sealed class Screen(
   data object Settings : Screen("settings")
 
   data object SigningScreen : Screen("signing")
-
+  object InitialLoginScreen : Screen("initialLoginScreen")
 
 }
