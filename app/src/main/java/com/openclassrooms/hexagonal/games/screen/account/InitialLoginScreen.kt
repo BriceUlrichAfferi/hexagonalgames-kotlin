@@ -16,23 +16,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.openclassrooms.hexagonal.games.R
-import com.openclassrooms.hexagonal.games.ui.MainActivity
+import com.openclassrooms.hexagonal.games.screen.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InitialLoginScreen(
     onSignInClick: () -> Unit,
+    onSignUpClick: () -> Unit, // Add the onSignUpClick function
     navController: NavController // Pass NavController to handle navigation
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.app_name)) },
+                title = { Text(text = stringResource(id = R.string.sign_in)) },
                 navigationIcon = {
                     IconButton(onClick = {
                         // This will go back to the previous screen
                         println("Back button clicked")
-                        navController.popBackStack()
+                        navController.navigate(Screen.Homefeed.route) // Navigate to AccountManagementScreen
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -81,6 +82,21 @@ fun InitialLoginScreen(
                 ) {
                     Text(
                         text = "Login with email address",
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp)) // Add space between buttons
+
+                Button(
+                    onClick = onSignUpClick, // Trigger the sign-up action
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Text(
+                        text = "Sign up with email address",
                         color = Color.White,
                         fontSize = 16.sp
                     )

@@ -4,6 +4,7 @@ plugins {
   alias(libs.plugins.ksp)
   alias(libs.plugins.hilt)
   id("com.google.gms.google-services")
+  id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -60,6 +61,11 @@ dependencies {
   implementation(libs.lifecycle.runtime.compose)
   debugImplementation(libs.compose.ui.tooling)
   debugImplementation(libs.compose.ui.test.manifest)
+  implementation(libs.hilt) // Hilt dependency
+  ksp(libs.hilt.compiler)  // Hilt compiler for annotation processing
+  implementation(libs.hilt.navigation.compose) // Hilt integration for Compose
+
+  implementation ("com.google.firebase:firebase-messaging")
 
   implementation(libs.activity.compose)
   implementation(libs.navigation.compose)

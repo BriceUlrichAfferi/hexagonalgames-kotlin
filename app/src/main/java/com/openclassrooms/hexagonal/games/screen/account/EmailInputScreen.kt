@@ -5,9 +5,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.openclassrooms.hexagonal.games.R
 
 @Composable
 fun EmailInputScreen(
@@ -24,7 +26,7 @@ fun EmailInputScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Enter your email",
+            text = stringResource(id = R.string.enter_email),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
@@ -33,7 +35,7 @@ fun EmailInputScreen(
         OutlinedTextField(
             value = email,
             onValueChange = onEmailChange,
-            label = { Text("Email") },
+            label = { Text(text = stringResource(id = R.string.email)) },
             isError = emailError != null,  // Show error if emailError is not null
             modifier = Modifier.fillMaxWidth()
         )
@@ -47,7 +49,7 @@ fun EmailInputScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onValidateEmail) {
-            Text("Next")
+            Text(text = stringResource(id = R.string.next))
         }
     }
 }

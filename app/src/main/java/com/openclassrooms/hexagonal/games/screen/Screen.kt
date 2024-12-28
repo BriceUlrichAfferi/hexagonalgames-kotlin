@@ -14,5 +14,10 @@ sealed class Screen(
 
   data object SigningScreen : Screen("signing")
   object InitialLoginScreen : Screen("initialLoginScreen")
+  object AccountManagementScreen : Screen("managementScreen")
+
+  object SigninScaffold : Screen("signinScaffold")
+  object SignIn : Screen("signIn")
+
 
 }

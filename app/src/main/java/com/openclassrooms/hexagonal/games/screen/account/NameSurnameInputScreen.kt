@@ -11,10 +11,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.openclassrooms.hexagonal.games.R
 
 
 @Composable
@@ -37,7 +39,7 @@ fun NameSurnameInputScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Enter your name and surname",
+            text = stringResource(id = R.string.enter_name_surname),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
@@ -48,7 +50,7 @@ fun NameSurnameInputScreen(
         OutlinedTextField(
             value = name,
             onValueChange = onNameChange,
-            label = { Text("Name") },
+            label = { Text(text = stringResource(id = R.string.name)) },
             isError = nameError != null,
             modifier = Modifier.fillMaxWidth()
         )
@@ -100,7 +102,7 @@ fun NameSurnameInputScreen(
                 }
             }
         ) {
-            Text("Next")
+            Text(text = stringResource(id = R.string.next))
         }
     }
 }

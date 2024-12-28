@@ -1,5 +1,8 @@
 package com.openclassrooms.hexagonal.games.screen.account
 
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -13,43 +16,65 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.openclassrooms.hexagonal.games.R
-
+import com.openclassrooms.hexagonal.games.screen.Screen
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SigninScreen(onLoginSuccess: () -> Unit, navController: NavController) {
+    Log.d("SigninScreen", "SigninScreen is recomposed")
+
     val context = LocalContext.current
-    val currentStep = remember { mutableStateOf(1) }
+    val currentStep = remember { mutableStateOf(1) } // Starting from 0 for initial login screen
 
     // Sign-in state variables
-    val email = remember { mutableStateOf("") }
-    val name = remember { mutableStateOf("") }
-    val surname = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-    val emailError = remember { mutableStateOf<String?>(null) }
     val passwordError = remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(currentStep.value) {
-        // Handle any side effects when currentStep changes
-        println("LaunchedEffect for step: ${currentStep.value}")
+    val auth = FirebaseAuth.getInstance()
+    val currentUser = auth.currentUser
 
-        println("Step changed to: ${currentStep.value}")
-        // Additional logic here if needed
+    // Check authentication status
+    val toastShown = remember { mutableStateOf(false) }
+
+    LaunchedEffect(currentUser) {
+        if (!toastShown.value) {
+            toastShown.value = true
+            withContext(Dispatchers.Main) {
+                if (currentUser != null) {
+                    // If the user is already authenticated, show a message and navigate to home
+                    Toast.makeText(context, "You are already authenticated!", Toast.LENGTH_SHORT).show()
+                    //navController.navigate(Screen.Homefeed.route) // Corrected route to Homefeed
+                    navController.navigate(Screen.AccountManagementScreen.route) // Navigate to AccountManagementScreen
+
+                } else {
+                    // If the user is not authenticated, show a different message
+                    Toast.makeText(context, "Please register or sign in", Toast.LENGTH_SHORT).show()
+                    navController.navigate(Screen.InitialLoginScreen.route) // Navigate to AccountManagementScreen
+
+                }
+            }
+        }
     }
 
     Scaffold(
         topBar = {
-            if (currentStep.value > 0) { // Show back button only for steps 1 and above
+            if (currentStep.value > 0) {
+                val title = when (currentStep.value) {
+                    1 -> R.string.sign_in
+                    2 -> R.string.sign_in
+                    else -> R.string.app_name // Default title, assuming you have one
+                }
                 TopAppBar(
-                    title = { Text(text = stringResource(id = R.string.app_name)) },
+                    title = { Text(text = stringResource(id = title)) },
                     navigationIcon = {
                         IconButton(onClick = {
-                            if (currentStep.value > 0) {
-                                currentStep.value -= 1 // Go back to the previous step
-                            }
+                            if (currentStep.value > 0) currentStep.value -= 1 // Go back to the previous step
                         }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -63,49 +88,11 @@ fun SigninScreen(onLoginSuccess: () -> Unit, navController: NavController) {
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
             when (currentStep.value) {
-                0 -> InitialLoginScreen(
-                    onSignInClick = { currentStep.value = 1 },
-                    navController = navController // Pass navController here
-                )
-                1 -> EmailInputScreen(
-                    email = email.value,
-                    emailError = emailError.value,
-                    onEmailChange = { email.value = it },
-                    onValidateEmail = {
-                        emailError.value = when {
-                            email.value.isBlank() -> "Email cannot be empty"
-                            !android.util.Patterns.EMAIL_ADDRESS.matcher(email.value).matches() -> "Please enter a valid email address"
-                            else -> null
-                        }
-
-                        if (emailError.value == null) {
-                            FirebaseAuth.getInstance().fetchSignInMethodsForEmail(email.value)
-                                .addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
-                                        val isExistingUser = task.result?.signInMethods?.isNotEmpty() == true
-                                        currentStep.value = if (isExistingUser) 3 else 2
-                                    } else {
-                                        emailError.value = "Error: ${task.exception?.message}"
-                                    }
-                                }
-                        }
-                    }
-                )
-                2 -> NameSurnameInputScreen(
-                    name = name.value,
-                    surname = surname.value,
-                    onNameChange = { name.value = it },
-                    onSurnameChange = { surname.value = it },
-                    onNext = {
-                        if (name.value.isNotBlank() && surname.value.isNotBlank()) {
-                            currentStep.value = 3
-                        }
-                    }
-                )
-                3 -> PasswordInputScreen(
+                1 -> PasswordInputScreen(
                     password = password.value,
                     onPasswordChange = { password.value = it },
                     onLogin = {
+                        // Validate password and login
                         passwordError.value = when {
                             password.value.isBlank() -> "Password cannot be empty"
                             password.value.length < 6 -> "Password must be at least 6 characters"
@@ -113,23 +100,16 @@ fun SigninScreen(onLoginSuccess: () -> Unit, navController: NavController) {
                         }
 
                         if (passwordError.value == null) {
-                            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email.value, password.value)
-                                .addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
-                                        onLoginSuccess()
-                                        Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-                                    } else {
-                                        FirebaseAuth.getInstance().signInWithEmailAndPassword(email.value, password.value)
-                                            .addOnCompleteListener { signInTask ->
-                                                if (signInTask.isSuccessful) {
-                                                    onLoginSuccess()
-                                                    Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-                                                } else {
-                                                    passwordError.value = "Error: ${signInTask.exception?.message}"
-                                                }
-                                            }
-                                    }
-                                }
+                            val user = FirebaseAuth.getInstance().currentUser
+                            if (user != null) {
+                                // Proceed with login if the user is authenticated
+                                onLoginSuccess()
+                                Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
+                                navController.navigate(Screen.Homefeed.route) // Corrected route to Homefeed
+                            } else {
+                                passwordError.value = "Authentication failed"
+                                Toast.makeText(context, "Authentication failed", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 )
