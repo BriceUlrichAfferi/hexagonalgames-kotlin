@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.openclassrooms.hexagonal.games.R
 import com.openclassrooms.hexagonal.games.screen.Screen
 
@@ -119,9 +120,24 @@ fun SigninScaffold(
                             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email.value, password.value)
                                 .addOnCompleteListener { task ->
                                     if (task.isSuccessful) {
-                                        onLoginSuccess()
-                                        Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
+                                        val user = FirebaseAuth.getInstance().currentUser
+                                        user?.let {
+                                            // Here, we save the name and surname to Firestore
+                                            val firestore = FirebaseFirestore.getInstance()
+                                            val userRef = firestore.collection("users").document(it.uid)
+                                            userRef.set(mapOf(
+                                                "firstName" to name.value,
+                                                "lastName" to surname.value
+                                            )).addOnSuccessListener {
+                                                onLoginSuccess()
+                                                Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
+                                            }.addOnFailureListener { e ->
+                                                // Handle failure to write to Firestore
+                                                Toast.makeText(context, "Failed to save user details: ${e.message}", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
                                     } else {
+                                        // If creation fails, attempt to sign in for existing users
                                         FirebaseAuth.getInstance().signInWithEmailAndPassword(email.value, password.value)
                                             .addOnCompleteListener { signInTask ->
                                                 if (signInTask.isSuccessful) {

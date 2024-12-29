@@ -7,19 +7,21 @@ import java.io.Serializable
  * their ID, first name, and last name. The class implements Serializable to allow for potential
  * serialization needs.
  */
+
+// Default value
 data class User(
   /**
    * Unique identifier for the User.
    */
-  val id: String,
+  val id: String = "",
   
   /**
    * User's first name.
    */
-  val firstname: String,
+  val firstName: String = "",
   
   /**
    * User's last name.
    */
-  val lastname: String
+  val lastName: String = ""
 ) : Serializable

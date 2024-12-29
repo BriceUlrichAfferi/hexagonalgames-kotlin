@@ -18,9 +18,9 @@ import javax.inject.Inject
 @HiltViewModel
 class HomefeedViewModel @Inject constructor(private val postRepository: PostRepository) :
   ViewModel() {
-  
+
   private val _posts: MutableStateFlow<List<Post>> = MutableStateFlow(emptyList())
-  
+
   /**
    * Returns a Flow observable containing the list of posts fetched from the repository.
    *
@@ -28,13 +28,13 @@ class HomefeedViewModel @Inject constructor(private val postRepository: PostRepo
    */
   val posts: StateFlow<List<Post>>
     get() = _posts
-  
-  init {
-    viewModelScope.launch {
-      postRepository.posts.collect {
-        _posts.value = it
-      }
+
+
+init {
+  viewModelScope.launch {
+    postRepository.posts.collect { postList ->
+      _posts.value = postList
     }
   }
-  
+}
 }

@@ -58,7 +58,7 @@ fun HomefeedScreen(
   onFABClick: () -> Unit = {},
 ) {
   var showMenu by rememberSaveable { mutableStateOf(false) }
-  
+
   Scaffold(
     modifier = modifier,
     topBar = {
@@ -117,7 +117,7 @@ fun HomefeedScreen(
     }
   ) { contentPadding ->
     val posts by viewModel.posts.collectAsStateWithLifecycle()
-    
+
     HomefeedList(
       modifier = modifier.padding(contentPadding),
       posts = posts,
@@ -125,6 +125,7 @@ fun HomefeedScreen(
     )
   }
 }
+
 
 @Composable
 private fun HomefeedList(
@@ -152,17 +153,17 @@ private fun HomefeedCell(
 ) {
   ElevatedCard(
     modifier = Modifier.fillMaxWidth(),
-    onClick = {
-      onPostClick(post)
-    }) {
+    onClick = { onPostClick(post) }
+  ) {
     Column(
       modifier = Modifier.padding(8.dp),
     ) {
+      val author = post.author
       Text(
         text = stringResource(
           id = R.string.by,
-          post.author?.firstname ?: "",
-          post.author?.lastname ?: ""
+          author?.firstName ?: "Unknown",
+          author?.lastName ?: "User"
         ),
         style = MaterialTheme.typography.titleSmall
       )
@@ -196,6 +197,7 @@ private fun HomefeedCell(
   }
 }
 
+
 @PreviewLightDark
 @PreviewScreenSizes
 @Composable
@@ -210,8 +212,8 @@ private fun HomefeedCellPreview() {
         timestamp = 1,
         author = User(
           id = "1",
-          firstname = "firstname",
-          lastname = "lastname"
+          firstName = "firstname",
+          lastName = "lastname"
         )
       ),
       onPostClick = {}
@@ -233,8 +235,8 @@ private fun HomefeedCellImagePreview() {
         timestamp = 1,
         author = User(
           id = "1",
-          firstname = "firstname",
-          lastname = "lastname"
+          firstName = "firstname",
+          lastName = "lastname"
         )
       ),
       onPostClick = {}

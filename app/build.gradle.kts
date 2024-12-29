@@ -75,10 +75,22 @@ dependencies {
   implementation(libs.coil.compose)
   implementation(libs.accompanist.permissions)
 
+  implementation ("androidx.activity:activity-compose:1.5.0")
+  // Other dependencies
+  implementation("androidx.activity:activity-ktx:1.8.2")
+
+
   //FIREBASE
   implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
   implementation("com.google.firebase:firebase-analytics")
   implementation("com.firebaseui:firebase-ui-auth:8.0.1")
+  implementation ("com.google.firebase:firebase-firestore")
+  implementation ("com.google.firebase:firebase-storage")
+
+
+
+  implementation ("com.google.accompanist:accompanist-permissions:0.37.0")
+
 
 
   testImplementation(libs.junit)
