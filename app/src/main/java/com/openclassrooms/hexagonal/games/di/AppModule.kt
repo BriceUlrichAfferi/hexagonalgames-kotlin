@@ -47,13 +47,18 @@ class AppModule {
 
   @Provides
   @Singleton
+  fun provideContext(@ApplicationContext context: Context): Context {
+    return context
+  }
+
+  @Provides
+  @Singleton
   fun providePostRepository(
     firestore: FirebaseFirestore,  // Only provide FirebaseFirestore here
     storage: FirebaseStorage // Provide FirebaseStorage if needed
   ): PostRepository {
     return PostRepository(firestore) // Pass only FirebaseFirestore to the PostRepository constructor
   }
-
 
   @Provides
   @Singleton

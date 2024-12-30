@@ -1,5 +1,6 @@
 package com.openclassrooms.hexagonal.games.screen.homefeed
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -45,17 +46,30 @@ import coil.util.DebugLogger
 import com.openclassrooms.hexagonal.games.R
 import com.openclassrooms.hexagonal.games.domain.model.Post
 import com.openclassrooms.hexagonal.games.domain.model.User
+import com.openclassrooms.hexagonal.games.screen.Screen
 import com.openclassrooms.hexagonal.games.ui.theme.HexagonalGamesTheme
-
+import androidx.navigation.NavHostController
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomefeedScreen(
   modifier: Modifier = Modifier,
   viewModel: HomefeedViewModel = hiltViewModel(),
-  onPostClick: (Post) -> Unit = {},
+  navHostController: NavHostController,
+  onPostClick: (Post) -> Unit = { post ->
+    Log.d("HomefeedScreen", "Post clicked, id: ${post.id}")
+    try {
+      Log.d("HexagonalGamesNavHost", "Navigating to post details with id: ${post.id}")
+      navHostController.navigate(Screen.PostDetails.createRoute(post.id))
+
+      Log.d("HomefeedScreen", "Navigation attempt for post ${post.id}")
+    } catch (e: Exception) {
+      Log.e("HomefeedScreen", "Navigation failed for post ${post.id}: ${e.message}", e)
+    }
+  },
+
   onSettingsClick: () -> Unit = {},
   onAccountClick: () -> Unit = {},
-  onFABClick: () -> Unit = {},
+  onFABClick: () -> Unit = {}
 ) {
   var showMenu by rememberSaveable { mutableStateOf(false) }
 
@@ -117,6 +131,7 @@ fun HomefeedScreen(
     }
   ) { contentPadding ->
     val posts by viewModel.posts.collectAsStateWithLifecycle()
+    Log.d("HomefeedScreen", "Posts collected: ${posts.size}")
 
     HomefeedList(
       modifier = modifier.padding(contentPadding),
@@ -153,7 +168,11 @@ private fun HomefeedCell(
 ) {
   ElevatedCard(
     modifier = Modifier.fillMaxWidth(),
-    onClick = { onPostClick(post) }
+    onClick = {
+      Log.d("HomefeedCell", "Click event on post: ${post.id}")
+      Log.d("HomefeedCell", "About to call onPostClick")
+
+      onPostClick(post) }
   ) {
     Column(
       modifier = Modifier.padding(8.dp),

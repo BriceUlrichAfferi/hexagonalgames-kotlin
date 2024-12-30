@@ -2,9 +2,11 @@ package com.openclassrooms.hexagonal.games.data.repository
 
 
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
+import com.openclassrooms.hexagonal.games.domain.model.Comment
 import com.openclassrooms.hexagonal.games.domain.model.Post
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -31,12 +33,13 @@ class PostRepository @Inject constructor(
       .get()
       .await() // Await the result of the snapshot
 
-    // Map the documents to Post objects and emit them
-    val postList = snapshot.documents.mapNotNull { document ->
-      document.toObject(Post::class.java)
+    // Map the documents to Post objects and emit them, ensuring 'id' matches the document ID
+    val posts = snapshot.documents.mapNotNull { doc ->
+      val post = doc.toObject(Post::class.java)
+      post?.copy(id = doc.id) // Here you're ensuring the 'id' in Post matches the document ID
     }
 
-    emit(postList) // Emit the list of posts
+    emit(posts) // Emit the list of posts
   }
 
   /**
@@ -61,7 +64,40 @@ class PostRepository @Inject constructor(
     }
   }
 
+  suspend fun getPostById(postId: String): Post? {
+    return try {
+      val document = firestore.collection("posts")
+        .document(postId) // Use postId here
+        .get()
+        .await()
+
+      if (document.exists()) {
+        document.toObject(Post::class.java)
+      } else {
+        null
+      }
+    } catch (e: Exception) {
+      null
+    }
+  }
+
+  suspend fun getCommentsForPost(postId: String): List<Comment> {
+    return try {
+      firestore.collection("posts")
+        .document(postId)
+        .collection("comments")
+        .orderBy("timestamp", Query.Direction.ASCENDING)
+        .get()
+        .await()
+        .toObjects(Comment::class.java)
+    } catch (e: Exception) {
+      emptyList() // Return an empty list in case of an error
+    }
+  }
+
   private fun savePostToFirestore(postId: String, post: Post) {
     firestore.collection("posts").document(postId).set(post)
   }
+
 }
+
