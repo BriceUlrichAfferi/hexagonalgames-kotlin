@@ -28,6 +28,7 @@ import com.openclassrooms.hexagonal.games.domain.model.Post
 import com.openclassrooms.hexagonal.games.screen.Screen
 import com.openclassrooms.hexagonal.games.screen.account.AccountManagementScreen
 import com.openclassrooms.hexagonal.games.screen.account.InitialLoginScreen
+import com.openclassrooms.hexagonal.games.screen.account.PasswordRecoveryScreen
 import com.openclassrooms.hexagonal.games.screen.account.PostDetailsScreen
 import com.openclassrooms.hexagonal.games.screen.account.SignIn
 import com.openclassrooms.hexagonal.games.screen.account.SigninScaffold
@@ -168,7 +169,9 @@ fun HexagonalGamesNavHost(navHostController: NavHostController) {
         PostDetailsScreen(post = post!!, navController = navHostController)
       }
     }
-
+    composable(route = Screen.PasswordRecovery.route) {
+      PasswordRecoveryScreen(navController = navHostController)
+    }
     composable(
       route = Screen.CommentFormScreen.route,
       arguments = Screen.CommentFormScreen.navArguments

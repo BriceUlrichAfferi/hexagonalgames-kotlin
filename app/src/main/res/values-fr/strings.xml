@@ -30,7 +30,9 @@
   <string name="notifications_enabled">Notifications activées</string>
   <string name="notifications_disabled">Notifications désactivées</string>
   <string name="comments_title">Commentaires</string>
-
+  <string name="select_photo">Sélectionnez une photo</string>
+  <string name="add_comment">Ajout d\'un commentaire</string>
+  <string name="password_recovery">Récupérer votre mot de passe</string>
 
 
 </resources>

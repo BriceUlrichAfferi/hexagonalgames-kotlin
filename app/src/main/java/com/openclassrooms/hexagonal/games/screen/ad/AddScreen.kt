@@ -154,7 +154,9 @@ private fun CreatePost(
           pickImageLauncherForOlder.launch("image/*")
         }
       }) {
-        Text("Upload Photo")
+
+       Text(text = stringResource(id = R.string.select_photo)) }
+
       }
     }
 
@@ -184,7 +186,6 @@ private fun CreatePost(
       )
     }
   }
-}
 
 
 

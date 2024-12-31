@@ -9,7 +9,7 @@ plugins {
 
 android {
   namespace = "com.openclassrooms.hexagonal.games"
-  compileSdk = 34
+  compileSdk = 35
 
   defaultConfig {
     applicationId = "com.openclassrooms.hexagonal.games"
@@ -79,6 +79,10 @@ dependencies {
   // Other dependencies
   implementation("androidx.activity:activity-ktx:1.8.2")
 
+  //Material dependencies for Icons and others
+
+  implementation("androidx.compose.material3:material3:1.4.0-alpha05")
+  implementation("androidx.compose.material:material-icons-extended:1.6.0-alpha05")
 
   //FIREBASE
   implementation(platform("com.google.firebase:firebase-bom:33.7.0"))

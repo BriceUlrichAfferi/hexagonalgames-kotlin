@@ -20,6 +20,10 @@ sealed class Screen(
   object SigninScaffold : Screen("signinScaffold")
   object SignIn : Screen("signIn")
 
+  object PasswordRecovery : Screen("passwordRecovery")
+
+
+
   object PostDetails : Screen("postDetails/{postId}", listOf(
     navArgument("postId") { type = NavType.StringType }
   )) {

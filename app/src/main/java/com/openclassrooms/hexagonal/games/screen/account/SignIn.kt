@@ -4,6 +4,8 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -30,6 +33,7 @@ fun SignIn(
     val passwordError = remember { mutableStateOf<String?>(null) }
     val currentStep = remember { mutableStateOf(1) } // Step 1 for email, Step 2 for password
     val auth = FirebaseAuth.getInstance()
+    var passwordVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -60,7 +64,7 @@ fun SignIn(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Sign In",
+                text = stringResource(id = R.string.sign_in),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -98,14 +102,21 @@ fun SignIn(
 
             // Step 2: Password input
             if (currentStep.value == 2) {
-                // Password input
+                // Password input with visibility toggle
                 TextField(
                     value = password.value,
                     onValueChange = { password.value = it },
                     label = { Text("Password") },
                     isError = passwordError.value != null,
                     modifier = Modifier.fillMaxWidth(),
-                    visualTransformation = PasswordVisualTransformation()
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                        val description = if (passwordVisible) "Hide password" else "Show password"
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(imageVector = image, contentDescription = description)
+                        }
+                    }
                 )
                 passwordError.value?.let {
                     Text(text = it, color = Color.Red, fontSize = 12.sp)
@@ -140,7 +151,7 @@ fun SignIn(
 
                 // Forgot Password clickable text
                 TextButton(onClick = {
-                    // Navigate to Password Reset screen (not implemented yet)
+                    navController.navigate(Screen.PasswordRecovery.route)
                 }) {
                     Text("Trouble signing in?", color = MaterialTheme.colorScheme.primary)
                 }
