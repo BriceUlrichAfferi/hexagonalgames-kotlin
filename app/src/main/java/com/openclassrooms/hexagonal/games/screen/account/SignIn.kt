@@ -12,9 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -89,7 +92,11 @@ fun SignIn(
 
                 Button(
                     onClick = {
-                        emailError.value = if (email.value.isBlank()) "Email cannot be empty" else null
+                        emailError.value = when {
+                            email.value.isBlank() -> "Email cannot be empty"
+                            !isValidEmail(email.value) -> "Email not valid"
+                            else -> null
+                        }
                         if (emailError.value == null) {
                             currentStep.value = 2 // Proceed to password input step
                         }
@@ -102,6 +109,27 @@ fun SignIn(
 
             // Step 2: Password input
             if (currentStep.value == 2) {
+                // Display the welcome back message
+                // Display the welcome back message with bold email
+                val welcomeBackText = buildAnnotatedString {
+                    val welcomeText = stringResource(R.string.welcome_back_message, email.value)
+                    append(welcomeText)
+                    addStyle(
+                        style = SpanStyle(fontWeight = FontWeight.Bold),
+                        start = welcomeText.indexOf(email.value),
+                        end = welcomeText.indexOf(email.value) + email.value.length
+                    )
+                }
+
+                Text(
+                    text = welcomeBackText,
+                    modifier = Modifier.padding(top = 16.dp),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 // Password input with visibility toggle
                 TextField(
                     value = password.value,
@@ -144,7 +172,7 @@ fun SignIn(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Sign In", color = Color.White)
+                    Text(text = stringResource(id = R.string.sign_in), color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -158,4 +186,9 @@ fun SignIn(
             }
         }
     }
+}
+
+fun isValidEmail(email: String): Boolean {
+    val emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$".toRegex()
+    return emailRegex.matches(email)
 }

@@ -16,6 +16,8 @@
   <string name="contentDescription_notification_icon">Notification icon</string>
   <string name="error_title">Titre non valide</string>
   <string name="sign_in">Se connecter</string>
+  <string name="welcome_back_message">Bienvenue ! \nVous avez déjà utilisé l\'adresse e-mail
+                            <b>%1$s</b> pour vous connecter. \nSaisissez le mot de passe du compte.</string>
   <string name="enter_email">Saisissez votre e-mail</string>
   <string name="enter_name_surname">Entrez votre nom et prénom</string>
   <string name="enter_password">Saisissez votre mot de passe</string>
@@ -32,7 +34,12 @@
   <string name="comments_title">Commentaires</string>
   <string name="select_photo">Sélectionnez une photo</string>
   <string name="add_comment">Ajout d\'un commentaire</string>
+  <string name="password_recovery_label">Les instructions relatives à la réinitialisatio n de votre mot de passe seront envoyées à cette adresse e-mail.</string>
   <string name="password_recovery">Récupérer votre mot de passe</string>
+  <string name="password_recovery_message">Consultez votre boîte de réception. \nSuivez les instructions envoyées à l\'adresse %1$s pour récupérer votre mot de passe.</string>
 
-
+  <string name="account_mandatory_for_post">Un compte est nécessaire pour ajouter une publication</string>
+  <string name="account_mandatory_for_comment">Un compte est nécessaire pour ajouter un commentaire</string>
+  <string name="no_publication">Aucune publication</string>
+  <string name="no_network">Pas de réseau</string>
 </resources>

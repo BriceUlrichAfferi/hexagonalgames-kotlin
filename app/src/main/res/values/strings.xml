@@ -16,6 +16,7 @@
   <string name="contentDescription_notification_icon">Icone de notification</string>
   <string name="error_title">Title not valid</string>
   <string name="sign_in">Sign in</string>
+  <string name="welcome_back_message">Welcome back! \nYou\'ve already used <b>%1$s</b> to sign in. \nEnter your password for that account.</string>
   <string name="enter_email">Enter your email</string>
   <string name="enter_name_surname">Enter your name and surname</string>
   <string name="enter_password">Enter your password</string>
@@ -33,8 +34,15 @@
   <string name="select_photo">Select a photo</string>
   <string name="add_comment">Add a comment</string>
   <string name="password_recovery">Recover password</string>
+  <string name="password_recovery_label">Receive instructions to this email that explain how to reset your password.</string>
+  <string name="password_recovery_message">Check your email. \nFollow the instructions sent to %1$s to recover your password.</string>
 
 
+
+  <string name="account_mandatory_for_post">An account is mandatory in order to add a post</string>
+  <string name="account_mandatory_for_comment">An account is mandatory in order to add a comment</string>
+  <string name="no_publication">No posts</string>
+  <string name="no_network">No network</string>
 
 
 </resources>

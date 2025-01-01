@@ -24,6 +24,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.BuildConfig
+import com.google.firebase.FirebaseApp
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.openclassrooms.hexagonal.games.domain.model.Post
 import com.openclassrooms.hexagonal.games.screen.Screen
 import com.openclassrooms.hexagonal.games.screen.account.AccountManagementScreen
@@ -48,6 +53,36 @@ class MainActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    Log.d("DebugCheck", "BuildConfig.DEBUG: ${BuildConfig.DEBUG}")
+
+    // Initialize Firebase if not already initialized
+    if (FirebaseApp.getApps(this).isEmpty()) {
+      FirebaseApp.initializeApp(this)
+    }
+
+    // Set up Firebase App Check
+    val firebaseAppCheck = FirebaseAppCheck.getInstance()
+    firebaseAppCheck.installAppCheckProviderFactory(
+      if (BuildConfig.DEBUG) {
+        DebugAppCheckProviderFactory.getInstance()
+      } else {
+        PlayIntegrityAppCheckProviderFactory.getInstance()
+      }
+    )
+
+    // Fetch and log the App Check token for debugging in debug builds
+    if (BuildConfig.DEBUG) {
+      Log.d("AppCheck", "Attempting to fetch debug token")
+      firebaseAppCheck.getAppCheckToken(true).addOnSuccessListener { appCheckTokenResponse ->
+        val token = appCheckTokenResponse.token
+        Log.d("AppCheck", "Debug Token: $token")
+      }.addOnFailureListener { exception ->
+        Log.e("AppCheck", "Failed to get debug token", exception)
+      }
+    } else {
+      Log.d("AppCheck", "Running in release mode, no debug token fetch")
+    }
+
     firebaseAuthManager = FirebaseAuthManager(this)
 
     setContent {
@@ -71,8 +106,6 @@ fun HexagonalGamesNavHost(navHostController: NavHostController) {
     navController = navHostController,
     startDestination = Screen.Homefeed.route
   ) {
-
-
     composable(route = Screen.Homefeed.route) {
       HomefeedScreen(
         onPostClick = { post ->
@@ -91,7 +124,6 @@ fun HexagonalGamesNavHost(navHostController: NavHostController) {
         navHostController = navHostController
       )
     }
-
 
     composable(route = Screen.AddPost.route) {
       AddScreen(
@@ -182,7 +214,5 @@ fun HexagonalGamesNavHost(navHostController: NavHostController) {
         navController = navHostController // Pass the NavHostController here
       )
     }
-
   }
 }
-

@@ -21,12 +21,19 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
-  buildTypes {
-    release {
-      isMinifyEnabled = false
-      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+    buildTypes {
+      debug {
+        // Debug specific settings
+        isMinifyEnabled = false
+        // You can add more debug-specific settings here if needed
+      }
+      release {
+        isMinifyEnabled = false
+        proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        // Release specific settings
+      }
     }
-  }
+
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -48,7 +55,9 @@ dependencies {
 
   //DI
   implementation(libs.hilt)
-  ksp(libs.hilt.compiler)
+  implementation(libs.firebase.appcheck.playintegrity)
+    implementation(libs.firebase.appcheck.debug)
+    ksp(libs.hilt.compiler)
   implementation(libs.hilt.navigation.compose)
 
   //compose
@@ -91,6 +100,7 @@ dependencies {
   implementation ("com.google.firebase:firebase-firestore")
   implementation ("com.google.firebase:firebase-storage")
 
+  implementation("com.google.firebase:firebase-appcheck-debug")
 
 
   implementation ("com.google.accompanist:accompanist-permissions:0.37.0")

@@ -1,7 +1,6 @@
 package com.openclassrooms.hexagonal.games.screen.account
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -30,6 +29,7 @@ fun PasswordRecoveryScreen(
     val emailError = remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
+    var showDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -55,7 +55,7 @@ fun PasswordRecoveryScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Password Recovery",
+                text = stringResource(id = R.string.password_recovery_label),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -66,7 +66,7 @@ fun PasswordRecoveryScreen(
             TextField(
                 value = email.value,
                 onValueChange = { email.value = it },
-                label = { Text("Email Address") },
+                label = { Text(text = stringResource(id = R.string.email)) },
                 isError = emailError.value != null,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -85,8 +85,7 @@ fun PasswordRecoveryScreen(
                         auth.sendPasswordResetEmail(email.value.text)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
-                                    Toast.makeText(context, "Check your email for reset instructions", Toast.LENGTH_LONG).show()
-                                    navController.navigateUp()
+                                    showDialog = true
                                 } else {
                                     task.exception?.let {
                                         Log.e("PasswordRecovery", "Error sending reset email: ${it.message}")
@@ -103,6 +102,30 @@ fun PasswordRecoveryScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Send Reset Email", color = Color.White)
+            }
+
+            // Show dialog when reset email is sent successfully
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = {
+                        showDialog = false
+                        navController.navigateUp()
+                    },
+                    title = { Text("Password Reset") },
+                    text = {
+                        Text(text = stringResource(id = R.string.password_recovery_message, email.value.text))
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showDialog = false
+                                navController.navigateUp()
+                            }
+                        ) {
+                            Text("OK")
+                        }
+                    }
+                )
             }
         }
     }

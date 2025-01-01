@@ -1,5 +1,7 @@
 package com.openclassrooms.hexagonal.games.screen.account
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,12 +21,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +47,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.imageLoader
 import coil.util.DebugLogger
+import com.google.firebase.auth.FirebaseAuth
 import com.openclassrooms.hexagonal.games.R
 import com.openclassrooms.hexagonal.games.domain.model.Comment
 import com.openclassrooms.hexagonal.games.domain.model.Post
@@ -49,6 +55,7 @@ import com.openclassrooms.hexagonal.games.domain.model.User
 import com.openclassrooms.hexagonal.games.screen.Screen
 import com.openclassrooms.hexagonal.games.screen.homefeed.HomefeedViewModel
 import com.openclassrooms.hexagonal.games.ui.theme.HexagonalGamesTheme
+import kotlinx.coroutines.launch
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,6 +69,9 @@ fun PostDetailsScreen(
         viewModel.getCommentsForPost(post.id)
     }
     val comments by viewModel.comments.collectAsState(initial = emptyList())
+    val auth = FirebaseAuth.getInstance()
+    val context = LocalContext.current
+
     HexagonalGamesTheme {
         Scaffold(
             topBar = {
@@ -77,13 +87,20 @@ fun PostDetailsScreen(
                 )
             },
             floatingActionButton = {
+                val accountMandatoryMessage = stringResource(R.string.account_mandatory_for_comment)
                 FloatingActionButton(
                     onClick = {
-                        navController.navigate(Screen.CommentFormScreen.createRoute(post.id))
+                        Log.d("PostDetailsScreen", "Add comment button clicked")
+                        if (auth.currentUser == null) {
+                            Log.d("PostDetailsScreen", "User is not logged in, showing toast")
+                            Toast.makeText(context, accountMandatoryMessage, Toast.LENGTH_SHORT).show()
+                        } else {
+                            Log.d("PostDetailsScreen", "User is logged in, navigating to comment form")
+                            navController.navigate(Screen.CommentFormScreen.createRoute(post.id))
+                        }
                     },
                     containerColor = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 16.dp)
                 ) {
                     Icon(Icons.Filled.Add, contentDescription = "Add Comment")
                 }
