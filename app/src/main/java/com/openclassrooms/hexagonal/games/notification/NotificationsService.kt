@@ -32,7 +32,7 @@ class NotificationsService : FirebaseMessagingService() {
         }
     }
 
-    private fun sendNotification(title: String, messageBody: String?) {
+    fun sendNotification(title: String, messageBody: String?) {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "default_channel"
 

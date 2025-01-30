@@ -9,10 +9,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.openclassrooms.hexagonal.games.R
 import com.openclassrooms.hexagonal.games.screen.Screen
 import com.openclassrooms.hexagonal.games.ui.theme.HexagonalGamesTheme
 
@@ -25,6 +27,9 @@ fun AccountManagementScreen(
 ) {
     val auth = FirebaseAuth.getInstance()
     val currentUser = auth.currentUser
+    val context = LocalContext.current
+    val message = stringResource(id = R.string.account_deleted_successfully)
+    val log_out = stringResource(id = R.string.account_logged_Out)
 
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var isDeleting by remember { mutableStateOf(false) }
@@ -33,7 +38,7 @@ fun AccountManagementScreen(
     fun logout() {
         auth.signOut()
         onLogout() // Navigate to InitialLoginScreen
-        Toast.makeText(navController.context, "You have logged out", Toast.LENGTH_SHORT).show()
+        Toast.makeText(navController.context, log_out, Toast.LENGTH_SHORT).show()
     }
 
     // Handle delete account
@@ -45,7 +50,7 @@ fun AccountManagementScreen(
                     isDeleting = false
                     if (task.isSuccessful) {
                         onDeleteAccount() // Navigate to InitialLoginScreen
-                        Toast.makeText(navController.context, "Account deleted successfully", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(navController.context, "Error deleting account: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                     }
@@ -56,7 +61,7 @@ fun AccountManagementScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Account Management") },
+                title = { Text(stringResource(id = R.string.account_managements)) },
                 navigationIcon = {
                     IconButton(onClick = {
                         navController.navigate(Screen.Homefeed.route) {
@@ -83,7 +88,8 @@ fun AccountManagementScreen(
             ) {
                 // Display current user information (optional)
                 currentUser?.let {
-                    Text(text = "Logged in as: ${it.email}", style = MaterialTheme.typography.bodyLarge)
+                    Text(text = stringResource(id = R.string.logged_as, it.email ?: "Unknown"),
+                        style = MaterialTheme.typography.bodyLarge)
                 }
 
                 Spacer(modifier = Modifier.height(40.dp))
@@ -93,7 +99,7 @@ fun AccountManagementScreen(
                     onClick = { logout() },
                     modifier = Modifier.fillMaxWidth(0.8f)
                 ) {
-                    Text(text = "Log Out")
+                    Text(text = stringResource(id = R.string.log_out))
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -104,7 +110,7 @@ fun AccountManagementScreen(
                     modifier = Modifier.fillMaxWidth(0.8f),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text(text = "Delete Account", color = MaterialTheme.colorScheme.onError)
+                    Text(text = stringResource(id = R.string.delete_account), color = MaterialTheme.colorScheme.onError)
                 }
             }
         }
@@ -114,20 +120,20 @@ fun AccountManagementScreen(
     if (showConfirmationDialog) {
         AlertDialog(
             onDismissRequest = { showConfirmationDialog = false },
-            title = { Text(text = "Confirm Account Deletion") },
-            text = { Text(text = "Are you sure you want to delete your account? This action is irreversible.") },
+            title = { Text(text = stringResource(id = R.string.deletion_account_dialog)) },
+            text = { Text(text = stringResource(id = R.string.deletion_account_sure)) },
             confirmButton = {
                 TextButton(
                     onClick = { deleteAccount() }
                 ) {
-                    Text("Delete")
+                    Text(stringResource(id = R.string.delete_account))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showConfirmationDialog = false }
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(id = R.string.cancel))
                 }
             }
         )

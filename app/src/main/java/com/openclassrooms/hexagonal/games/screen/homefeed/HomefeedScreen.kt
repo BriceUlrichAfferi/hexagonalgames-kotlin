@@ -1,7 +1,6 @@
 package com.openclassrooms.hexagonal.games.screen.homefeed
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -23,16 +22,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -55,9 +49,6 @@ import com.openclassrooms.hexagonal.games.domain.model.User
 import com.openclassrooms.hexagonal.games.screen.Screen
 import com.openclassrooms.hexagonal.games.ui.theme.HexagonalGamesTheme
 import androidx.navigation.NavHostController
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomefeedScreen(
@@ -69,38 +60,18 @@ fun HomefeedScreen(
     try {
       Log.d("HexagonalGamesNavHost", "Navigating to post details with id: ${post.id}")
       navHostController.navigate(Screen.PostDetails.createRoute(post.id))
+
       Log.d("HomefeedScreen", "Navigation attempt for post ${post.id}")
     } catch (e: Exception) {
       Log.e("HomefeedScreen", "Navigation failed for post ${post.id}: ${e.message}", e)
     }
   },
+
   onSettingsClick: () -> Unit = {},
   onAccountClick: () -> Unit = {},
   onFABClick: () -> Unit = {}
 ) {
   var showMenu by rememberSaveable { mutableStateOf(false) }
-  val context = LocalContext.current
-  val auth = FirebaseAuth.getInstance()
-  val snackbarHostState = remember { SnackbarHostState() }
-  val coroutineScope = rememberCoroutineScope()
-
-  // Collect error states
-  val error by viewModel.error.collectAsStateWithLifecycle()
-
-  LaunchedEffect(error) {
-    error?.let {
-      when (it) {
-        "no_publication" -> {
-          Toast.makeText(context, context.getString(R.string.no_publication), Toast.LENGTH_SHORT).show()
-        }
-        "no_network" -> {
-          Toast.makeText(context, context.getString(R.string.no_network), Toast.LENGTH_SHORT).show()
-        }
-        // Handle other errors if needed
-      }
-      viewModel.clearError() // Clear the error after handling
-    }
-  }
 
   Scaffold(
     modifier = modifier,
@@ -147,20 +118,9 @@ fun HomefeedScreen(
     },
     floatingActionButtonPosition = FabPosition.End,
     floatingActionButton = {
-      val accountMandatoryMessage = stringResource(R.string.account_mandatory_for_post)
       FloatingActionButton(
         onClick = {
-          Log.d("HomefeedScreen", "Add button clicked")
-          if (auth.currentUser == null) {
-            Log.d("HomefeedScreen", "User is not logged in, showing snackbar")
-            coroutineScope.launch {
-              snackbarHostState.showSnackbar(accountMandatoryMessage)
-            }
-          } else {
-            Log.d("HomefeedScreen", "User is logged in, navigating to add post")
-            onFABClick()
-
-          }
+          onFABClick()
         }
       ) {
         Icon(
@@ -168,8 +128,7 @@ fun HomefeedScreen(
           contentDescription = stringResource(id = R.string.description_button_add)
         )
       }
-    },
-    snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    }
   ) { contentPadding ->
     val posts by viewModel.posts.collectAsStateWithLifecycle()
     Log.d("HomefeedScreen", "Posts collected: ${posts.size}")
@@ -181,6 +140,7 @@ fun HomefeedScreen(
     )
   }
 }
+
 
 @Composable
 private fun HomefeedList(
@@ -212,8 +172,7 @@ private fun HomefeedCell(
       Log.d("HomefeedCell", "Click event on post: ${post.id}")
       Log.d("HomefeedCell", "About to call onPostClick")
 
-      onPostClick(post)
-    }
+      onPostClick(post) }
   ) {
     Column(
       modifier = Modifier.padding(8.dp),
@@ -256,6 +215,7 @@ private fun HomefeedCell(
     }
   }
 }
+
 
 @PreviewLightDark
 @PreviewScreenSizes

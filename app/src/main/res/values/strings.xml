@@ -1,6 +1,7 @@
 <resources>
   <string name="app_name">Hexagonal Games</string>
   <string name="action_settings">Settings</string>
+  <string name="account_managements">Account Management</string>
   <string name="action_account">Account</string>
   <string name="add_fragment_label">Add a post</string>
   <string name="homefeed_fragment_label">Home</string>
@@ -27,8 +28,21 @@
   <string name="next">Next</string>
   <string name="save">Save</string>
   <string name="re_authenticate">Enter your password</string>
+  <string name="logged_as">Logged in as: %1$s</string>
+
   <string name="sign_up">Sign up</string>
   <string name="notifications_enabled">Nofifications enabled</string>
+  <string name="no_comment">No Comment yet</string>
+  <string name="commented_at">Commented at: %1$s</string>
+  <string name="account_deleted_successfully">Account deleted successfully</string>
+  <string name="account_logged_Out">"You have logged out"</string>
+  <string name="deletion_account_dialog">"Confirm Account Deletion"</string>
+  <string name="deletion_account_sure">"Are you sure you want to delete your account? This action is irreversible."</string>
+  <string name="write_comment">Write your comment</string>
+  <string name="submit_comment">Submit</string>
+  <string name="cannot_be_empty">Cannot be empty</string>
+  <string name="log_out">Log Out</string>
+  <string name="delete_account">Delete Account</string>
   <string name="notifications_disabled">Nofifications disabled</string>
   <string name="comments_title">Comments</string>
   <string name="select_photo">Select a photo</string>
@@ -36,6 +50,7 @@
   <string name="password_recovery">Recover password</string>
   <string name="password_recovery_label">Receive instructions to this email that explain how to reset your password.</string>
   <string name="password_recovery_message">Check your email. \nFollow the instructions sent to %1$s to recover your password.</string>
+  <string name="cancel">Cancel</string>
 
 
 

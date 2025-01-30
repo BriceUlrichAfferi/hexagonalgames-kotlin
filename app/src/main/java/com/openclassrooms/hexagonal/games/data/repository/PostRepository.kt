@@ -8,7 +8,9 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import com.openclassrooms.hexagonal.games.domain.model.Comment
 import com.openclassrooms.hexagonal.games.domain.model.Post
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
@@ -99,5 +101,43 @@ class PostRepository @Inject constructor(
     firestore.collection("posts").document(postId).set(post)
   }
 
-}
+  // This method listens for real-time updates for a specific post
+  fun getPostDetailsRealtime(postId: String): Flow<Post?> = callbackFlow {
+    val listener = firestore.collection("posts")
+      .document(postId) // Listen to the specific post
+      .addSnapshotListener { snapshot, exception ->
+        if (exception != null) {
+          Log.w("PostRepository", "Listen failed.", exception)
+          close(exception)
+          return@addSnapshotListener
+        }
 
+        val post = snapshot?.toObject(Post::class.java)
+        trySend(post)
+      }
+
+    awaitClose { listener.remove() }
+  }
+
+  // This method listens for real-time updates for the entire list of posts
+  fun getPostsRealtime(): Flow<List<Post>> = callbackFlow {
+    val listener = firestore.collection("posts")
+      .orderBy("timestamp", Query.Direction.DESCENDING) // Order by timestamp in descending order
+      .addSnapshotListener { snapshot, exception ->
+        if (exception != null) {
+          Log.w("PostRepository", "Listen failed.", exception)
+          close(exception)
+          return@addSnapshotListener
+        }
+
+        val posts = snapshot?.documents?.mapNotNull { document ->
+          document.toObject(Post::class.java)
+        } ?: emptyList()
+
+        trySend(posts)
+      }
+
+    awaitClose { listener.remove() }
+  }
+
+}

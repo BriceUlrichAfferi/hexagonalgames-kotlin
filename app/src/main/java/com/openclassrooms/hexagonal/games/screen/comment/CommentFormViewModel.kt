@@ -19,19 +19,19 @@ class CommentFormViewModel @Inject constructor(
 ) : ViewModel() {
 
     // State for storing the list of comments
-    private val _comments = MutableStateFlow<List<Comment>>(emptyList())
+    val _comments = MutableStateFlow<List<Comment>>(emptyList())
     val comments: StateFlow<List<Comment>> = _comments
 
     // State for storing the comment text
-    private val _commentText = MutableStateFlow("")
+     val _commentText = MutableStateFlow("")
     val commentText: StateFlow<String> = _commentText
 
     // State for tracking submission status
-    private val _isSubmitting = MutableStateFlow(false)
+     val _isSubmitting = MutableStateFlow(false)
     val isSubmitting: StateFlow<Boolean> = _isSubmitting
 
     // State for error messages
-    private val _errorMessage = MutableStateFlow<String?>(null)
+     val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
     // Function to fetch comments for a specific post
@@ -70,7 +70,7 @@ class CommentFormViewModel @Inject constructor(
     }
 
     // Function to submit the comment to Firestore
-    private fun submitComment(postId: String) {
+    fun submitComment(postId: String) {
         val comment = _commentText.value.trim()
         if (comment.isEmpty()) {
             _errorMessage.value = "Comment cannot be empty."

@@ -10,14 +10,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -187,20 +191,22 @@ fun HexagonalGamesNavHost(navHostController: NavHostController) {
       val postId = backStackEntry.arguments?.getString("postId") ?: return@composable
       val viewModel: HomefeedViewModel = hiltViewModel()
 
-      // Use MutableState to hold the post data
-      var post by remember { mutableStateOf<Post?>(null) }
+      // Collect the post details in real time
+      val post by viewModel.postDetails.collectAsState()
 
+      // Fetch the post in real-time if it's not already collected
       LaunchedEffect(postId) {
-        viewModel.getPostById(postId).collect { fetchedPost ->
-          post = fetchedPost
-        }
+        viewModel.getPostDetailsRealtime(postId)
       }
 
-      // Show content only when post is not null
-      if (post != null) {
+      // Show loading state if post is still null
+      if (post == null) {
+        CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+      } else {
         PostDetailsScreen(post = post!!, navController = navHostController)
       }
     }
+
     composable(route = Screen.PasswordRecovery.route) {
       PasswordRecoveryScreen(navController = navHostController)
     }

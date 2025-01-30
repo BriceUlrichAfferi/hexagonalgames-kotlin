@@ -56,7 +56,9 @@ import com.openclassrooms.hexagonal.games.screen.Screen
 import com.openclassrooms.hexagonal.games.screen.homefeed.HomefeedViewModel
 import com.openclassrooms.hexagonal.games.ui.theme.HexagonalGamesTheme
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -196,13 +198,15 @@ private fun PostDetailsContent(
                 }
             }
         } else {
-            Text("No comments yet", modifier = Modifier.padding(16.dp))
+            Text(stringResource(id = R.string.no_comment), modifier = Modifier.padding(16.dp))
         }
     }
 }
 
 @Composable
 fun CommentItem(comment: Comment) {
+
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -212,12 +216,14 @@ fun CommentItem(comment: Comment) {
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
+            val formattedDate = dateFormat.format(Date(comment.timestamp))
             Text(
                 text = comment.text,
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
-                text = "Commented at: ${Date(comment.timestamp)}",
+
+                text = stringResource(id = R.string.commented_at, formattedDate),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
             )

@@ -154,9 +154,7 @@ private fun CreatePost(
           pickImageLauncherForOlder.launch("image/*")
         }
       }) {
-
-       Text(text = stringResource(id = R.string.select_photo)) }
-
+        Text("Upload Photo")
       }
     }
 
@@ -186,6 +184,7 @@ private fun CreatePost(
       )
     }
   }
+}
 
 
 
@@ -250,12 +249,12 @@ fun savePostToFirestore(
 private fun CreatePostPreview() {
   HexagonalGamesTheme {
     /*CreatePost(
-      title = "test",
-      onTitleChanged = { },
-      description = "description",
-      onDescriptionChanged = { },
-      onSaveClicked = { },
-      error = null
+    title = "test",
+    onTitleChanged = { },
+    description = "description",
+    onDescriptionChanged = { },
+    onSaveClicked = { },
+    error = null
     )*/
   }
 }
@@ -266,12 +265,12 @@ private fun CreatePostPreview() {
 private fun CreatePostErrorPreview() {
   HexagonalGamesTheme {
     /*CreatePost(
-      title = "test",
-      onTitleChanged = { },
-      description = "description",
-      onDescriptionChanged = { },
-      onSaveClicked = { },
-      error = FormError.TitleError
+    title = "test",
+    onTitleChanged = { },
+    description = "description",
+    onDescriptionChanged = { },
+    onSaveClicked = { },
+    error = FormError.TitleError
     )*/
   }
 }

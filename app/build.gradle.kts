@@ -50,17 +50,19 @@ android {
 }
 
 dependencies {
-  //kotlin
+  // Kotlin
   implementation(platform(libs.kotlin.bom))
 
-  //DI
+  // DI (Hilt)
   implementation(libs.hilt)
   implementation(libs.firebase.appcheck.playintegrity)
-    implementation(libs.firebase.appcheck.debug)
-    ksp(libs.hilt.compiler)
+  implementation(libs.firebase.appcheck.debug)
+  implementation(libs.firebase.messaging.ktx)
+  implementation(libs.junit.ktx)
+  ksp(libs.hilt.compiler)
   implementation(libs.hilt.navigation.compose)
 
-  //compose
+  // Compose
   implementation(platform(libs.compose.bom))
   implementation(libs.compose.ui)
   implementation(libs.compose.ui.graphics)
@@ -74,40 +76,57 @@ dependencies {
   ksp(libs.hilt.compiler)  // Hilt compiler for annotation processing
   implementation(libs.hilt.navigation.compose) // Hilt integration for Compose
 
-  implementation ("com.google.firebase:firebase-messaging")
-
-  implementation(libs.activity.compose)
-  implementation(libs.navigation.compose)
-  
-  implementation(libs.kotlinx.coroutines.android)
-  
-  implementation(libs.coil.compose)
-  implementation(libs.accompanist.permissions)
-
-  implementation ("androidx.activity:activity-compose:1.5.0")
-  // Other dependencies
-  implementation("androidx.activity:activity-ktx:1.8.2")
-
-  //Material dependencies for Icons and others
-
-  implementation("androidx.compose.material3:material3:1.4.0-alpha05")
-  implementation("androidx.compose.material:material-icons-extended:1.6.0-alpha05")
-
-  //FIREBASE
+  // Firebase
   implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
   implementation("com.google.firebase:firebase-analytics")
-  implementation("com.firebaseui:firebase-ui-auth:8.0.1")
-  implementation ("com.google.firebase:firebase-firestore")
-  implementation ("com.google.firebase:firebase-storage")
-
+  implementation("com.google.firebase:firebase-auth-ktx") // Firebase Authentication KTX for coroutines
+  implementation("com.google.firebase:firebase-auth")
+  implementation("com.google.firebase:firebase-firestore")
+  implementation("com.google.firebase:firebase-storage")
   implementation("com.google.firebase:firebase-appcheck-debug")
 
+  // FirebaseUI
+  implementation("com.firebaseui:firebase-ui-auth:8.0.1")
 
-  implementation ("com.google.accompanist:accompanist-permissions:0.37.0")
+  // Coil (Image loading)
+  implementation(libs.coil.compose)
 
+  // Navigation & Permissions
+  implementation(libs.activity.compose)
+  implementation(libs.navigation.compose)
+  implementation("androidx.activity:activity-ktx:1.8.2")
+  implementation("androidx.compose.material3:material3:1.4.0-alpha05")
+  implementation("androidx.compose.material:material-icons-extended:1.6.0-alpha05")
+  implementation("com.google.accompanist:accompanist-permissions:0.37.0")
 
+  // Coroutines
+  implementation(libs.kotlinx.coroutines.android)
 
+  // Unit testing
+  testImplementation("junit:junit:4.13.2")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+  testImplementation("org.mockito:mockito-core:4.11.0")
+  testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+  testImplementation("org.mockito:mockito-inline:4.11.0")
+  testImplementation ("com.google.firebase:firebase-firestore:24.0.0 ")
+  testImplementation ("org.mockito:mockito-core:4.5.1")
+  testImplementation ("androidx.arch.core:core-testing:2.1.0")
+
+// Firebase dependencies for testing
+  testImplementation ("com.google.firebase:firebase-auth:21.0.7")
+  testImplementation ("io.mockk:mockk:1.12.0")
+
+  // Compose UI testing
+  androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.4")
+  androidTestImplementation ("androidx.test.ext:junit:1.1.5")
+  androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+  androidTestImplementation ("androidx.arch.core:core-testing:2.1.0")
+
+  // Additional testing dependencies
   testImplementation(libs.junit)
   androidTestImplementation(libs.ext.junit)
   androidTestImplementation(libs.espresso.core)
+
+  // Coroutine support for Firebase tasks
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.2")
 }

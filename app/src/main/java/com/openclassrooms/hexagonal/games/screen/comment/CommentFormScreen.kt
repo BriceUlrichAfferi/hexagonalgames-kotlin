@@ -63,14 +63,14 @@ fun CommentFormScreen(
             OutlinedTextField(
                 value = comment,
                 onValueChange = { comment = it },
-                label = { Text("Write your comment") },
+                label = { Text(stringResource(id = R.string.write_comment)) },
                 isError = showErrorMessage,  // Show error if there is an issue
                 modifier = Modifier.fillMaxWidth()
             )
 
             if (showErrorMessage) {
                 Text(
-                    text = "Comment cannot be empty",
+                    text = stringResource(id = R.string.write_comment),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -88,7 +88,7 @@ fun CommentFormScreen(
                 enabled = isButtonEnabled,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Submit")
+                Text(stringResource(id = R.string.write_comment))
             }
         }
     }

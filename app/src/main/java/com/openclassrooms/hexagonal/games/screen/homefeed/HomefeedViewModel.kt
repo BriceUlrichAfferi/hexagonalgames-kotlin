@@ -33,10 +33,27 @@ class HomefeedViewModel @Inject constructor(private val postRepository: PostRepo
   private val _error = MutableStateFlow<String?>(null)
   val error: StateFlow<String?> = _error.asStateFlow()
 
+  private val _postDetails = MutableStateFlow<Post?>(null)
+  val postDetails: StateFlow<Post?> = _postDetails
+
   init {
+    // Initial collection of posts
     viewModelScope.launch {
       postRepository.posts.collect { postList ->
         Log.d("HomefeedViewModel", "Collecting posts: ${postList.size}")
+        if (postList.isEmpty()) {
+          _error.value = "no_publication"
+        } else {
+          _posts.value = postList
+          _error.value = null // Clear any previous error if we have posts
+        }
+      }
+    }
+
+    // Listen for real-time updates from Firestore
+    viewModelScope.launch {
+      postRepository.getPostsRealtime().collect { postList ->
+        Log.d("HomefeedViewModel", "Real-time posts update: ${postList.size}")
         if (postList.isEmpty()) {
           _error.value = "no_publication"
         } else {
@@ -74,8 +91,13 @@ class HomefeedViewModel @Inject constructor(private val postRepository: PostRepo
     }
   }
 
-  // Function to clear error state
-  fun clearError() {
-    _error.value = null
+  fun getPostDetailsRealtime(postId: String) {
+    // Collect data from repository and get the first post
+    viewModelScope.launch {
+      postRepository.getPostsRealtime().collect { postList ->
+        // Emit the first post from the list or null if the list is empty
+        _postDetails.value = postList.firstOrNull()
+      }
+    }
   }
 }
