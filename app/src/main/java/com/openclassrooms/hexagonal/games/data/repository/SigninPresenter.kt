@@ -1,14 +1,12 @@
 package com.openclassrooms.hexagonal.games.presentation
 
 import android.widget.Toast
-import com.openclassrooms.hexagonal.games.data.repository.SigninContract
-import com.openclassrooms.hexagonal.games.data.repository.UserManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SigninPresenter(
+/*class SigninPresenter(
     private val view: SigninContract.View,
     private val userManager: UserManager
 ) : SigninContract.Presenter {
@@ -82,4 +80,4 @@ class SigninPresenter(
             }
         }
     }
-}
+}*/

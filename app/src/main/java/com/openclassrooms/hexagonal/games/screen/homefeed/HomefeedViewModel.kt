@@ -25,11 +25,9 @@ class HomefeedViewModel @Inject constructor(private val postRepository: PostRepo
   private val _posts: MutableStateFlow<List<Post>> = MutableStateFlow(emptyList())
   val posts: StateFlow<List<Post>> = _posts.asStateFlow()
 
-  // New state flow for comments
   private val _comments = MutableStateFlow<List<Comment>>(emptyList())
   val comments: StateFlow<List<Comment>> = _comments.asStateFlow()
 
-  // Error state
   private val _error = MutableStateFlow<String?>(null)
   val error: StateFlow<String?> = _error.asStateFlow()
 
@@ -37,20 +35,7 @@ class HomefeedViewModel @Inject constructor(private val postRepository: PostRepo
   val postDetails: StateFlow<Post?> = _postDetails
 
   init {
-    // Initial collection of posts
-    viewModelScope.launch {
-      postRepository.posts.collect { postList ->
-        Log.d("HomefeedViewModel", "Collecting posts: ${postList.size}")
-        if (postList.isEmpty()) {
-          _error.value = "no_publication"
-        } else {
-          _posts.value = postList
-          _error.value = null // Clear any previous error if we have posts
-        }
-      }
-    }
-
-    // Listen for real-time updates from Firestore
+    // Listen for real-time updates from Firestore for all posts
     viewModelScope.launch {
       postRepository.getPostsRealtime().collect { postList ->
         Log.d("HomefeedViewModel", "Real-time posts update: ${postList.size}")
@@ -65,13 +50,7 @@ class HomefeedViewModel @Inject constructor(private val postRepository: PostRepo
   }
 
   fun getPostById(postId: String): Flow<Post?> = flow {
-    val post = postRepository.getPostById(postId)
-    if (post == null) {
-      _error.value = "no_publication"
-    } else {
-      emit(post)
-      _error.value = null // Clear error if post found
-    }
+    emit(postRepository.getPostById(postId))
   }.flowOn(Dispatchers.IO)
 
   fun getCommentsForPost(postId: String) {
@@ -85,18 +64,17 @@ class HomefeedViewModel @Inject constructor(private val postRepository: PostRepo
         if (e is java.net.UnknownHostException) {
           _error.value = "no_network"
         } else {
-          _error.value = "unknown_error" // or any other specific error type
+          _error.value = "unknown_error"
         }
       }
     }
   }
 
   fun getPostDetailsRealtime(postId: String) {
-    // Collect data from repository and get the first post
     viewModelScope.launch {
-      postRepository.getPostsRealtime().collect { postList ->
-        // Emit the first post from the list or null if the list is empty
-        _postDetails.value = postList.firstOrNull()
+      postRepository.getPostDetailsRealtime(postId).collect { post ->
+        Log.d("HomefeedViewModel", "Collected post details for id $postId: ${post?.id}")
+        _postDetails.value = post
       }
     }
   }

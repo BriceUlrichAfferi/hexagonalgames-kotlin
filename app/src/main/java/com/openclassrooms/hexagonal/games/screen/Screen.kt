@@ -27,6 +27,7 @@ sealed class Screen(
   object PostDetails : Screen("postDetails/{postId}", listOf(
     navArgument("postId") { type = NavType.StringType }
   )) {
+    const val postIdArg = "postId"
     fun createRoute(postId: String) = "postDetails/$postId"
   }
 

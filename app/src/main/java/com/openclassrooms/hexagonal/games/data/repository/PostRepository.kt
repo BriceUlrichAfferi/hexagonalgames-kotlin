@@ -19,7 +19,7 @@ import javax.inject.Singleton
 
 @Singleton
 class PostRepository @Inject constructor(
-  private val firestore: FirebaseFirestore // Firestore for database
+  private val firestore: FirebaseFirestore
 ) {
 
   /**
@@ -28,20 +28,24 @@ class PostRepository @Inject constructor(
    *
    * @return Flow containing a list of Posts.
    */
-  val posts: Flow<List<Post>> = flow {
-    // Use Firestore to listen to the posts collection, ordered by timestamp
-    val snapshot = firestore.collection("posts")
-      .orderBy("timestamp", Query.Direction.DESCENDING) // Order by timestamp, most recent first
-      .get()
-      .await() // Await the result of the snapshot
+  fun getPostsRealtime(): Flow<List<Post>> = callbackFlow {
+    val listener = firestore.collection("posts")
+      .orderBy("timestamp", Query.Direction.DESCENDING) // Order by timestamp in descending order
+      .addSnapshotListener { snapshot, exception ->
+        if (exception != null) {
+          Log.w("PostRepository", "Listen failed.", exception)
+          close(exception)
+          return@addSnapshotListener
+        }
 
-    // Map the documents to Post objects and emit them, ensuring 'id' matches the document ID
-    val posts = snapshot.documents.mapNotNull { doc ->
-      val post = doc.toObject(Post::class.java)
-      post?.copy(id = doc.id) // Here you're ensuring the 'id' in Post matches the document ID
-    }
+        val posts = snapshot?.documents?.mapNotNull { document ->
+          document.toObject(Post::class.java)?.copy(id = document.id)
+        } ?: emptyList()
 
-    emit(posts) // Emit the list of posts
+        trySend(posts)
+      }
+
+    awaitClose { listener.remove() }
   }
 
   /**
@@ -66,36 +70,19 @@ class PostRepository @Inject constructor(
     }
   }
 
-  suspend fun getPostById(postId: String): Post? {
-    return try {
-      val document = firestore.collection("posts")
-        .document(postId) // Use postId here
-        .get()
-        .await()
+  suspend fun getPostById(postId: String): Post? = firestore.collection("posts")
+    .document(postId)
+    .get()
+    .await()
+    .toObject(Post::class.java)
 
-      if (document.exists()) {
-        document.toObject(Post::class.java)
-      } else {
-        null
-      }
-    } catch (e: Exception) {
-      null
-    }
-  }
-
-  suspend fun getCommentsForPost(postId: String): List<Comment> {
-    return try {
-      firestore.collection("posts")
-        .document(postId)
-        .collection("comments")
-        .orderBy("timestamp", Query.Direction.ASCENDING)
-        .get()
-        .await()
-        .toObjects(Comment::class.java)
-    } catch (e: Exception) {
-      emptyList() // Return an empty list in case of an error
-    }
-  }
+  suspend fun getCommentsForPost(postId: String): List<Comment> = firestore.collection("posts")
+    .document(postId)
+    .collection("comments")
+    .orderBy("timestamp", Query.Direction.ASCENDING)
+    .get()
+    .await()
+    .toObjects(Comment::class.java)
 
   private fun savePostToFirestore(postId: String, post: Post) {
     firestore.collection("posts").document(postId).set(post)
@@ -104,40 +91,18 @@ class PostRepository @Inject constructor(
   // This method listens for real-time updates for a specific post
   fun getPostDetailsRealtime(postId: String): Flow<Post?> = callbackFlow {
     val listener = firestore.collection("posts")
-      .document(postId) // Listen to the specific post
+      .document(postId)
       .addSnapshotListener { snapshot, exception ->
         if (exception != null) {
-          Log.w("PostRepository", "Listen failed.", exception)
+          Log.w("PostRepository", "Listen failed for post $postId", exception)
           close(exception)
           return@addSnapshotListener
         }
 
-        val post = snapshot?.toObject(Post::class.java)
+        val post = snapshot?.toObject(Post::class.java)?.copy(id = snapshot.id)
         trySend(post)
       }
 
     awaitClose { listener.remove() }
   }
-
-  // This method listens for real-time updates for the entire list of posts
-  fun getPostsRealtime(): Flow<List<Post>> = callbackFlow {
-    val listener = firestore.collection("posts")
-      .orderBy("timestamp", Query.Direction.DESCENDING) // Order by timestamp in descending order
-      .addSnapshotListener { snapshot, exception ->
-        if (exception != null) {
-          Log.w("PostRepository", "Listen failed.", exception)
-          close(exception)
-          return@addSnapshotListener
-        }
-
-        val posts = snapshot?.documents?.mapNotNull { document ->
-          document.toObject(Post::class.java)
-        } ?: emptyList()
-
-        trySend(posts)
-      }
-
-    awaitClose { listener.remove() }
-  }
-
 }

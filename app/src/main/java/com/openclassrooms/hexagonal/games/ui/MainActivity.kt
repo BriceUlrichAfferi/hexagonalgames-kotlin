@@ -188,18 +188,14 @@ fun HexagonalGamesNavHost(navHostController: NavHostController) {
       route = Screen.PostDetails.route,
       arguments = Screen.PostDetails.navArguments
     ) { backStackEntry ->
-      val postId = backStackEntry.arguments?.getString("postId") ?: return@composable
+      val postId = backStackEntry.arguments?.getString(Screen.PostDetails.postIdArg) ?: return@composable
       val viewModel: HomefeedViewModel = hiltViewModel()
-
-      // Collect the post details in real time
       val post by viewModel.postDetails.collectAsState()
 
-      // Fetch the post in real-time if it's not already collected
       LaunchedEffect(postId) {
         viewModel.getPostDetailsRealtime(postId)
       }
 
-      // Show loading state if post is still null
       if (post == null) {
         CircularProgressIndicator(modifier = Modifier.fillMaxSize())
       } else {

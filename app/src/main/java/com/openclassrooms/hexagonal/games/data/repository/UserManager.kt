@@ -3,7 +3,7 @@ package com.openclassrooms.hexagonal.games.data.repository
 
 import com.google.firebase.auth.FirebaseUser
 
-class UserManager(private val userRepository: UserRepository) {
+/*class UserManager(private val userRepository: UserRepository) {
 
     suspend fun loginUser(email: String, password: String): FirebaseUser? {
         return userRepository.signInWithEmailAndPassword(email, password)
@@ -21,4 +21,4 @@ class UserManager(private val userRepository: UserRepository) {
     fun getCurrentUser(): FirebaseUser? {
         return userRepository.getCurrentUser()
     }
-}
+}*/

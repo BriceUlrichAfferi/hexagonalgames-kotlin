@@ -1,7 +1,7 @@
 package com.openclassrooms.hexagonal.games.data.repository
 
 
-interface SigninContract {
+/*interface SigninContract {
 
     // View interface: Defines the UI methods the Presenter can call
     interface View {
@@ -18,4 +18,4 @@ interface SigninContract {
         fun onSignInClicked(email: String, password: String)
         fun onRegisterClicked(email: String, password: String)
     }
-}
+}*/

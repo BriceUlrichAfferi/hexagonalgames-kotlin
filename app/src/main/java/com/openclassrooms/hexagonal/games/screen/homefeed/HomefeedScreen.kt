@@ -60,7 +60,6 @@ fun HomefeedScreen(
     try {
       Log.d("HexagonalGamesNavHost", "Navigating to post details with id: ${post.id}")
       navHostController.navigate(Screen.PostDetails.createRoute(post.id))
-
       Log.d("HomefeedScreen", "Navigation attempt for post ${post.id}")
     } catch (e: Exception) {
       Log.e("HomefeedScreen", "Navigation failed for post ${post.id}: ${e.message}", e)

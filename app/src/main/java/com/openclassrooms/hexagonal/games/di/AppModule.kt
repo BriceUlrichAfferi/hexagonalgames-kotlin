@@ -6,7 +6,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.openclassrooms.hexagonal.games.data.repository.PostRepository
-import com.openclassrooms.hexagonal.games.data.repository.UserManager
 import com.openclassrooms.hexagonal.games.data.repository.UserRepository
 import com.openclassrooms.hexagonal.games.data.service.PostApi
 import com.openclassrooms.hexagonal.games.data.service.PostFakeApi
@@ -33,11 +32,11 @@ class AppModule {
     return UserRepository()
   }
 
-  @Provides
+  /*@Provides
   @Singleton
   fun provideUserManager(userRepository: UserRepository): UserManager {
     return UserManager(userRepository)
-  }
+  }*/
 
   @Provides
   @Singleton
